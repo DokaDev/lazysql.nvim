@@ -8,13 +8,16 @@ For more details, check the [help file](https://github.com/crnvl96/lazysql.nvim/
 
 # Contents
 
+- [lazysql.nvim](#lazysqlnvim)
+- [Contents](#contents)
 - [Inspiration](#inspiration)
 - [Alternatives](#alternatives)
-- [About this major release](#about-this-latest-major-release)
+- [About this major release](#about-this-major-release)
 - [Installation](#installation)
   - [Requirements](#requirements)
   - [Configuration](#configuration)
 - [Usage](#usage)
+- [Acknowledgements](#acknowledgements)
 
 # Inspiration
 
@@ -40,12 +43,12 @@ This version introduces several key improvements over the previous major release
 ## Requirements
 
 - Neovim >= 0.10.4
-- [Docker](https://docs.docker.com/)
+- [Docker](https://docs.lazysql.com/)
 - [lazysql](https://github.com/jesseduffield/lazysql) executable in your PATH
 
 ```lua
 -- Mini.deps
-MiniDeps.add('crnvl96/lazysql.nvim')
+MiniDeps.add('DokaDev/lazysql.nvim')
 require('lazysql').setup()
 ```
 
@@ -66,8 +69,8 @@ require('lazysql').setup()
 require('lazysql').setup({
   window = {
     settings = {
-      width = 0.618, -- Percentage of screen width (0 to 1)
-      height = 0.618, -- Percentage of screen height (0 to 1)
+      width = 0.9, -- Percentage of screen width (0 to 1)
+      height = 0.9, -- Percentage of screen height (0 to 1)
       border = 'rounded', -- See ':h nvim_open_win' border options
       relative = 'editor', -- See ':h nvim_open_win' relative options
     },

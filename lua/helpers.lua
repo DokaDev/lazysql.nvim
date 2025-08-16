@@ -68,10 +68,10 @@ local function _is_lazysql_executable_available()
   return vim.fn.executable('lazysql') == 1
 end
 
---- Checks if the docker executable is available in PATH.
+--- Checks if the lazysql executable is available in PATH.
 ---@return boolean
-local function _is_docker_executable_available()
-  return vim.fn.executable('docker') == 1
+local function _is_lazysql_executable_available()
+  return vim.fn.executable('lazysql') == 1
 end
 
 --- Merges user configuration with default configuration and validates it.
@@ -116,11 +116,11 @@ function M.setup_config(base_config, user_config)
   return config
 end
 
---- Checks if both docker and lazysql executables are available.
+--- Checks if both lazysql and lazysql executables are available.
 ---@return boolean True if both are available, false otherwise.
 function M.check_prerequisites()
-  if not _is_docker_executable_available() then
-    vim.notify('LazySql: "docker" command not found. Please install Docker.', vim.log.levels.ERROR)
+  if not _is_lazysql_executable_available() then
+    vim.notify('LazySql: "lazysql" command not found. Please install Docker.', vim.log.levels.ERROR)
     return false
   end
 

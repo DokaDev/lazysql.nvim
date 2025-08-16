@@ -195,7 +195,7 @@ T['open()'] = new_set({
   },
 })
 
-T['open()']['shows error if docker is missing'] = function()
+T['open()']['shows error if lazysql is missing'] = function()
   mock_child_functions(child, {
     ['vim.notify'] = [=[
     function(...)
@@ -206,7 +206,7 @@ T['open()']['shows error if docker is missing'] = function()
     ]=],
     ['vim.fn.executable'] = [=[
     function(cmd)
-      if cmd == 'docker' then return 0 end
+      if cmd == 'lazysql' then return 0 end
       return 1 
     end
     ]=],
@@ -216,7 +216,7 @@ T['open()']['shows error if docker is missing'] = function()
   lua('LazySql.open()')
 
   local notify_log = get('_G.mock_logs.notify')
-  eq(notify_log[1][1], 'LazySql: "docker" command not found. Please install Docker.')
+  eq(notify_log[1][1], 'LazySql: "lazysql" command not found. Please install Docker.')
   eq(notify_log[1][2], get('vim.log.levels.ERROR'))
 end
 
