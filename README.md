@@ -1,7 +1,7 @@
-# lazydocker.nvim
+# lazysql.nvim
 
-Simple and straightforward plugin that allows the user to open [lazydocker](https://github.com/jesseduffield/lazydocker) without quitting their current Neovim session.
-For more details, check the [help file](https://github.com/crnvl96/lazydocker.nvim/blob/742dcab71cf9fbb0adcc57831fb9a0f46afa598f/doc/lazydocker.txt)
+Simple and straightforward plugin that allows the user to open [lazysql](https://github.com/jesseduffield/lazysql) without quitting their current Neovim session.
+For more details, check the [help file](https://github.com/crnvl96/lazysql.nvim/blob/742dcab71cf9fbb0adcc57831fb9a0f46afa598f/doc/lazysql.txt)
 
 ![lzd](https://github.com/user-attachments/assets/8676f912-ad53-4f96-8f04-8548ab1f0363)
 
@@ -41,29 +41,29 @@ This version introduces several key improvements over the previous major release
 
 - Neovim >= 0.10.4
 - [Docker](https://docs.docker.com/)
-- [lazydocker](https://github.com/jesseduffield/lazydocker) executable in your PATH
+- [lazysql](https://github.com/jesseduffield/lazysql) executable in your PATH
 
 ```lua
 -- Mini.deps
-MiniDeps.add('crnvl96/lazydocker.nvim')
-require('lazydocker').setup()
+MiniDeps.add('crnvl96/lazysql.nvim')
+require('lazysql').setup()
 ```
 
 ```lua
 -- Lazy
 {
-  'crnvl96/lazydocker.nvim',
+  'crnvl96/lazysql.nvim',
     opts = {},
 }
 ```
 
 ## Configuration
 
-`lazydocker.nvim` comes with the following defaults. Call the `setup` function with your overrides.
+`lazysql.nvim` comes with the following defaults. Call the `setup` function with your overrides.
 
 ```lua
 -- Default configuration
-require('lazydocker').setup({
+require('lazysql').setup({
   window = {
     settings = {
       width = 0.618, -- Percentage of screen width (0 to 1)
@@ -77,16 +77,16 @@ require('lazydocker').setup({
 
 # Usage
 
-- It exposes the global table `LazyDocker`, for more convenient use
-- Use the command `:lua LazyDocker.toggle()` or `:lua require('lazydocker').toggle()` to toggle the floating panel.
-- Or set a keymap. It's recommended to map in both normal and terminal modes, as lazydocker runs inside a terminal buffer:
+- It exposes the global table `LazySql`, for more convenient use
+- Use the command `:lua LazySql.toggle()` or `:lua require('lazysql').toggle()` to toggle the floating panel.
+- Or set a keymap. It's recommended to map in both normal and terminal modes, as lazysql runs inside a terminal buffer:
 
 ```lua
-vim.keymap.set({ 'n', 't' }, '<leader>ld', '<Cmd>lua LazyDocker.toggle()<CR>')
+vim.keymap.set({ 'n', 't' }, '<leader>ld', '<Cmd>lua LazySql.toggle()<CR>')
 ```
 
-- For a more detailed reference about this plugin features, run `:help lazydocker.nvim`
-- For a quick reference regarding manipulating lazydocker features within its terminal, check the official [lazydocker keybindings](https://github.com/jesseduffield/lazydocker/blob/master/docs/keybindings/Keybindings_en.md).
+- For a more detailed reference about this plugin features, run `:help lazysql.nvim`
+- For a quick reference regarding manipulating lazysql features within its terminal, check the official [lazysql keybindings](https://github.com/jesseduffield/lazysql/blob/master/docs/keybindings/Keybindings_en.md).
 
 # Acknowledgements
 
@@ -94,4 +94,4 @@ Special thanks to the creators and maintainers of these fantastic tools which se
 
 - [mini.nvim](https://github.com/echasnovski/mini.nvim)
 - [lazygit.nvim](https://github.com/kdheepak/lazygit.nvim)
-- [lazydocker](https://github.com/jesseduffield/lazydocker)
+- [lazysql](https://github.com/jesseduffield/lazysql)

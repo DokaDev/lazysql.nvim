@@ -19,17 +19,17 @@ Helpers.new_child_neovim = function()
   end
 
   child.load_lzd = function(config)
-    child.lua([[require('lazydocker').setup(...)]], { config })
+    child.lua([[require('lazysql').setup(...)]], { config })
   end
 
   child.unload_lzd = function()
     -- Unload Lua module
-    child.lua([[package.loaded['lazydocker'] = nil]])
+    child.lua([[package.loaded['lazysql'] = nil]])
     -- Remove global table
-    child.lua('_G[LazyDocker] = nil')
+    child.lua('_G[LazySql] = nil')
     -- Remove autocmd group
-    if child.fn.exists('#LazyDocker') == 1 then
-      child.api.nvim_del_augroup_by_name('LazyDocker')
+    if child.fn.exists('#LazySql') == 1 then
+      child.api.nvim_del_augroup_by_name('LazySql')
     end
   end
 

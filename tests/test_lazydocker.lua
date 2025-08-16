@@ -27,15 +27,15 @@ T['setup()'] = new_set()
 
 T['setup()']['validate global table'] = function()
   load_module()
-  eq(get('type(LazyDocker)'), 'table')
-  eq(get('type(LazyDocker.config)'), 'table')
-  eq(get('type(LazyDocker.config.window)'), 'table')
-  eq(get('type(LazyDocker.config.window.settings)'), 'table')
+  eq(get('type(LazySql)'), 'table')
+  eq(get('type(LazySql.config)'), 'table')
+  eq(get('type(LazySql.config.window)'), 'table')
+  eq(get('type(LazySql.config.window.settings)'), 'table')
 end
 
 T['setup()']['validate global table property types'] = function()
   local expect_config_type = function(field, value)
-    field = ('type(LazyDocker.config.window.settings.%s)'):format(field)
+    field = ('type(LazySql.config.window.settings.%s)'):format(field)
     eq(get(field), value)
   end
 
@@ -49,32 +49,32 @@ end
 T['setup()']['check default config'] = function()
   load_module()
 
-  eq(get('LazyDocker.config.window.settings.height'), 0.618)
-  eq(get('LazyDocker.config.window.settings.width'), 0.618)
-  eq(get('LazyDocker.config.window.settings.border'), 'rounded')
-  eq(get('LazyDocker.config.window.settings.relative'), 'editor')
+  eq(get('LazySql.config.window.settings.height'), 0.618)
+  eq(get('LazySql.config.window.settings.width'), 0.618)
+  eq(get('LazySql.config.window.settings.border'), 'rounded')
+  eq(get('LazySql.config.window.settings.relative'), 'editor')
 end
 
 T['setup()']['check custom config'] = function()
   load_module({ window = { settings = { width = 0.5, height = 0.8, border = 'single', relative = 'cursor' } } })
 
-  eq(get('LazyDocker.config.window.settings.height'), 0.8)
-  eq(get('LazyDocker.config.window.settings.width'), 0.5)
-  eq(get('LazyDocker.config.window.settings.border'), 'single')
-  eq(get('LazyDocker.config.window.settings.relative'), 'cursor')
+  eq(get('LazySql.config.window.settings.height'), 0.8)
+  eq(get('LazySql.config.window.settings.width'), 0.5)
+  eq(get('LazySql.config.window.settings.border'), 'single')
+  eq(get('LazySql.config.window.settings.relative'), 'cursor')
 end
 
 T['setup() - invalid'] = new_set()
 
 T['setup() - invalid']['rejects invalid window type'] = function()
   local config = { window = 'a' }
-  local msg = '.*LazyDocker%.window:.*a table, if provided.*got a'
+  local msg = '.*LazySql%.window:.*a table, if provided.*got a'
   err(load_module, msg, config)
 end
 
 T['setup() - invalid']['rejects invalid window settings type'] = function()
   local config = { window = { settings = 'a' } }
-  local msg = '.*LazyDocker%.window%.settings:.*a table, if provided.*got a'
+  local msg = '.*LazySql%.window%.settings:.*a table, if provided.*got a'
   err(load_module, msg, config)
 end
 
@@ -213,14 +213,14 @@ T['open()']['shows error if docker is missing'] = function()
   })
 
   load_module()
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local notify_log = get('_G.mock_logs.notify')
-  eq(notify_log[1][1], 'LazyDocker: "docker" command not found. Please install Docker.')
+  eq(notify_log[1][1], 'LazySql: "docker" command not found. Please install Docker.')
   eq(notify_log[1][2], get('vim.log.levels.ERROR'))
 end
 
-T['open()']['shows error if lazydocker is missing'] = function()
+T['open()']['shows error if lazysql is missing'] = function()
   mock_child_functions(child, {
     ['vim.notify'] = [[
     function(...)
@@ -231,22 +231,22 @@ T['open()']['shows error if lazydocker is missing'] = function()
     ]],
     ['vim.fn.executable'] = [[
     function(cmd)
-      if cmd == 'lazydocker' then return 0 end
+      if cmd == 'lazysql' then return 0 end
       return 1
     end
     ]],
   })
 
   load_module()
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local notify_log = get('_G.mock_logs.notify')
 
-  eq(notify_log[1][1], 'LazyDocker: "lazydocker" command not found. Please install lazydocker.')
+  eq(notify_log[1][1], 'LazySql: "lazysql" command not found. Please install lazysql.')
   eq(notify_log[1][2], get('vim.log.levels.ERROR'))
 end
 
-T['open()']['spawns lazydocker and sets up correctly'] = function()
+T['open()']['spawns lazysql and sets up correctly'] = function()
   mock_child_functions(child, {
     ['vim.fn.executable'] = 'function(cmd) return 1 end',
     ['vim.fn.termopen'] = [[
@@ -286,7 +286,7 @@ T['open()']['spawns lazydocker and sets up correctly'] = function()
   })
 
   load_module()
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local termopen_cmd = get('_G.mock_logs and _G.mock_logs.termopen.cmd')
   local termopen_on_exit_type = get('_G.mock_logs and type(_G.mock_logs.termopen.on_exit)')
@@ -295,11 +295,11 @@ T['open()']['spawns lazydocker and sets up correctly'] = function()
   local current_buf = 10
   local current_win = 20
 
-  eq(termopen_cmd, 'lazydocker')
+  eq(termopen_cmd, 'lazysql')
   eq(termopen_on_exit_type, 'function')
-  eq(get('__LazyDocker_Process_JobID'), 99)
+  eq(get('__LazySql_Process_JobID'), 99)
 
-  eq(augroup_log.name, 'LazyDockerTermCleanup')
+  eq(augroup_log.name, 'LazySqlTermCleanup')
   eq(augroup_log.opts.clear, true)
 
   eq(autocmd_log[1].events, { 'BufWipeout' })
@@ -341,14 +341,14 @@ T['open()']['handles process exit'] = function()
   })
 
   load_module()
-  lua('LazyDocker.open()')
-  eq(get('__LazyDocker_Process_JobID'), 99)
+  lua('LazySql.open()')
+  eq(get('__LazySql_Process_JobID'), 99)
 
   lua('_G.mock_logs.termopen_on_exit()')
 
   local win_close_log = get('_G.mock_logs and _G.mock_logs.win_close')
 
-  eq(get('__LazyDocker_Process_JobID'), vim.NIL)
+  eq(get('__LazySql_Process_JobID'), vim.NIL)
   eq(win_close_log.win, opened_win_id)
   eq(win_close_log.force, true)
 end
@@ -393,14 +393,14 @@ T['open()']['handles window close'] = function()
   })
 
   load_module()
-  lua('LazyDocker.open()')
-  eq(get('__LazyDocker_Process_JobID'), 99)
+  lua('LazySql.open()')
+  eq(get('__LazySql_Process_JobID'), 99)
 
   lua(('_G.mock_logs.callbacks["%s"]()'):format(tostring(opened_win_id)))
 
   eq(get('_G.mock_logs.jobwait.jobs'), { 99 })
   eq(get('_G.mock_logs.jobstop'), 99)
-  eq(get('__LazyDocker_Process_JobID'), vim.NIL)
+  eq(get('__LazySql_Process_JobID'), vim.NIL)
   eq(get('_G.mock_logs.del_augroup'), 55)
 end
 
@@ -444,14 +444,14 @@ T['open()']['handles buffer wipeout'] = function()
   })
 
   load_module()
-  lua('LazyDocker.open()')
-  eq(get('__LazyDocker_Process_JobID'), 99)
+  lua('LazySql.open()')
+  eq(get('__LazySql_Process_JobID'), 99)
 
   lua(('_G.mock_logs.callbacks[%d]()'):format(opened_buf_id))
 
   eq(get('_G.mock_logs.jobwait.jobs'), { 99 })
   eq(get('_G.mock_logs.jobstop'), 99)
-  eq(get('__LazyDocker_Process_JobID'), vim.NIL)
+  eq(get('__LazySql_Process_JobID'), vim.NIL)
   eq(get('_G.mock_logs.del_augroup'), 55)
 end
 
@@ -483,16 +483,16 @@ T['open()']['stops previous job if running'] = function()
 
   load_module()
 
-  lua('__LazyDocker_Process_JobID = 100')
+  lua('__LazySql_Process_JobID = 100')
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local jobwait_log = get('_G.mock_logs.jobwait')
   local jobstop_log = get('_G.mock_logs.jobstop')
 
   eq(jobwait_log[1].jobs, { 100 })
   eq(jobstop_log[1], 100)
-  eq(get('__LazyDocker_Process_JobID'), 101)
+  eq(get('__LazySql_Process_JobID'), 101)
 end
 
 T['open()']['focuses existing window if already open'] = function()
@@ -514,9 +514,9 @@ T['open()']['focuses existing window if already open'] = function()
   })
 
   load_module()
-  lua('_G.__LazyDocker_Window_Handle = 100')
+  lua('_G.__LazySql_Window_Handle = 100')
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   eq(get('_G.mock_logs.set_current_win'), existing_win_id)
   eq(get('_G.mock_logs.termopen_called'), vim.NIL)
@@ -541,7 +541,7 @@ T['open()']['respects minimum width'] = function()
   child.o.columns = 50
   load_module({ window = { settings = { width = 0.1 } } })
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local open_win_opts = get('_G.mock_logs and _G.mock_logs.open_win_opts')
   eq(open_win_opts.width, 40)
@@ -566,7 +566,7 @@ T['open()']['respects minimum height'] = function()
   child.o.lines = 15
   load_module({ window = { settings = { height = 0.1 } } })
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local open_win_opts = get('_G.mock_logs and _G.mock_logs.open_win_opts')
   eq(open_win_opts.height, 10)
@@ -596,7 +596,7 @@ T['open()']['uses global winborder if set'] = function()
   child.o.winborder = 'double'
   load_module()
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local open_win_opts = get('_G.mock_logs and _G.mock_logs.open_win_opts')
   eq(open_win_opts.border, 'double')
@@ -626,7 +626,7 @@ T['open()']['uses plugin border if global winborder is empty'] = function()
   child.o.winborder = ''
   load_module()
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local open_win_opts = get('_G.mock_logs and _G.mock_logs.open_win_opts')
   eq(open_win_opts.border, 'rounded')
@@ -651,7 +651,7 @@ T['open()']['uses plugin border if winborder option does not exist'] = function(
 
   load_module()
 
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local open_win_opts = get('_G.mock_logs and _G.mock_logs.open_win_opts')
   eq(open_win_opts.border, 'rounded')
@@ -692,7 +692,7 @@ T['open() - window geometry'] = new_set({
 
 T['open() - window geometry']['calculates correctly with default UI (no tabline, no statusline)'] = function()
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'rounded' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -704,7 +704,7 @@ end
 T['open() - window geometry']['calculates correctly with statusline'] = function()
   child.o.laststatus = 2
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'rounded' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -716,7 +716,7 @@ end
 T['open() - window geometry']['calculates correctly with tabline (always)'] = function()
   child.o.showtabline = 2
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'rounded' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -728,7 +728,7 @@ end
 T['open() - window geometry']['calculates correctly with tabline (multiple tabs)'] = function()
   lua('vim.cmd("tabnew")')
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'rounded' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -741,7 +741,7 @@ T['open() - window geometry']['calculates correctly with statusline and tabline'
   child.o.laststatus = 2
   child.o.showtabline = 2
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'rounded' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -752,7 +752,7 @@ end
 
 T['open() - window geometry']['calculates correctly without border'] = function()
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'none' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -764,7 +764,7 @@ end
 T['open() - window geometry']['calculates correctly with different cmdheight'] = function()
   child.o.cmdheight = 2
   load_module({ window = { settings = { width = 0.8, height = 0.8, border = 'rounded' } } })
-  lua('LazyDocker.open()')
+  lua('LazySql.open()')
 
   local opts = get('_G.mock_logs.open_win_opts')
   eq(opts.width, 80)
@@ -782,7 +782,7 @@ T['close()'] = new_set({
     post_case = function()
       lua('if _G.__restore_mocks then _G.__restore_mocks() end')
       lua('_G.mock_logs = nil')
-      lua('_G.__LazyDocker_Window_Handle = nil')
+      lua('_G.__LazySql_Window_Handle = nil')
     end,
   },
 })
@@ -799,13 +799,13 @@ T['close()']['closes the window if open and valid'] = function()
     ]],
   })
 
-  lua(('_G.__LazyDocker_Window_Handle = %d'):format(valid_win_id))
-  local result = lua('return LazyDocker.close()')
+  lua(('_G.__LazySql_Window_Handle = %d'):format(valid_win_id))
+  local result = lua('return LazySql.close()')
 
   local win_close_log = get('_G.mock_logs.win_close')
   eq(win_close_log.win, valid_win_id)
   eq(win_close_log.force, true)
-  eq(get('_G.__LazyDocker_Window_Handle'), vim.NIL)
+  eq(get('_G.__LazySql_Window_Handle'), vim.NIL)
   eq(result, true)
 end
 
@@ -824,11 +824,11 @@ T['close()']['returns false if window handle is nil'] = function()
     ]],
   })
 
-  lua('_G.__LazyDocker_Window_Handle = nil')
-  local result = lua('return LazyDocker.close()')
+  lua('_G.__LazySql_Window_Handle = nil')
+  local result = lua('return LazySql.close()')
 
   eq(get('_G.mock_logs.win_close_called'), false)
-  eq(get('_G.__LazyDocker_Window_Handle'), vim.NIL)
+  eq(get('_G.__LazySql_Window_Handle'), vim.NIL)
   eq(result, false)
 end
 
@@ -850,11 +850,11 @@ T['close()']['returns false if window handle is invalid'] = function()
     ]],
   })
 
-  lua(('_G.__LazyDocker_Window_Handle = %d'):format(invalid_win_id))
-  local result = lua('return LazyDocker.close()')
+  lua(('_G.__LazySql_Window_Handle = %d'):format(invalid_win_id))
+  local result = lua('return LazySql.close()')
 
   eq(get('_G.mock_logs.win_close_called'), false)
-  eq(get('_G.__LazyDocker_Window_Handle'), invalid_win_id)
+  eq(get('_G.__LazySql_Window_Handle'), invalid_win_id)
   eq(result, false)
 end
 
@@ -873,14 +873,14 @@ T['toggle()'] = new_set({
 
 T['toggle()']['calls open() if close() returns false'] = function()
   mock_child_functions(child, {
-    ['LazyDocker.close'] = [[
+    ['LazySql.close'] = [[
       function()
         _G.mock_logs = _G.mock_logs or {}
         _G.mock_logs.close_called = (_G.mock_logs.close_called or 0) + 1
         return false -- Simulate window was not open or failed to close
       end
     ]],
-    ['LazyDocker.open'] = [[
+    ['LazySql.open'] = [[
       function()
         _G.mock_logs = _G.mock_logs or {}
         _G.mock_logs.open_called = (_G.mock_logs.open_called or 0) + 1
@@ -888,7 +888,7 @@ T['toggle()']['calls open() if close() returns false'] = function()
     ]],
   })
 
-  lua('LazyDocker.toggle()')
+  lua('LazySql.toggle()')
 
   eq(get('_G.mock_logs.close_called'), 1)
   eq(get('_G.mock_logs.open_called'), 1)
@@ -896,14 +896,14 @@ end
 
 T['toggle()']['calls close() only if close() returns true'] = function()
   mock_child_functions(child, {
-    ['LazyDocker.close'] = [[
+    ['LazySql.close'] = [[
       function()
         _G.mock_logs = _G.mock_logs or {}
         _G.mock_logs.close_called = (_G.mock_logs.close_called or 0) + 1
         return true -- Simulate window was open and closed successfully
       end
     ]],
-    ['LazyDocker.open'] = [[
+    ['LazySql.open'] = [[
       function()
         _G.mock_logs = _G.mock_logs or {}
         _G.mock_logs.open_called = (_G.mock_logs.open_called or 0) + 1
@@ -911,7 +911,7 @@ T['toggle()']['calls close() only if close() returns true'] = function()
     ]],
   })
 
-  lua('LazyDocker.toggle()')
+  lua('LazySql.toggle()')
 
   eq(get('_G.mock_logs.close_called'), 1)
   eq(get('_G.mock_logs.open_called'), vim.NIL)

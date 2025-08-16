@@ -1,65 +1,65 @@
-*lazydocker.nvim* lazydocker management within Neovim
+*lazysql.nvim* lazysql management within Neovim
 
 MIT License Copyright (c) 2024 Adran Carnavale
 
 ------------------------------------------------------------------------------
 Summary
 
-* |LazyDocker.types|
-* |LazyDocker.setup|
-* |LazyDocker.config|
-* |LazyDocker.open|
-* |LazyDocker.close|
-* |LazyDocker.toggle|
-* |LazyDocker.recipes|
+* |LazySql.types|
+* |LazySql.setup|
+* |LazySql.config|
+* |LazySql.open|
+* |LazySql.close|
+* |LazySql.toggle|
+* |LazySql.recipes|
 
 ------------------------------------------------------------------------------
-                                                              *LazyDocker.types*
+                                                              *LazySql.types*
 Class ~
-{LazyDocker}
+{LazySql}
 Fields ~
-{config} `(LazyDocker.Config)` Module config table. See |LazyDocker.config|.
-{setup} `(fun(config?: LazyDocker.Config))` Module Setup. See |LazyDocker.setup()|.
-{open} `(fun())` Opens a new floating window with lazydocker running. See |LazyDocker.open()|.
-{close} `(fun():boolean)` Closes the lazydocker window if open. See |LazyDocker.close()|.
-{toggle} `(fun())` Toggles the lazydocker window open/closed. See |LazyDocker.toggle()|.
+{config} `(LazySql.Config)` Module config table. See |LazySql.config|.
+{setup} `(fun(config?: LazySql.Config))` Module Setup. See |LazySql.setup()|.
+{open} `(fun())` Opens a new floating window with lazysql running. See |LazySql.open()|.
+{close} `(fun():boolean)` Closes the lazysql window if open. See |LazySql.close()|.
+{toggle} `(fun())` Toggles the lazysql window open/closed. See |LazySql.toggle()|.
 
 Class ~
-{LazyDocker.Config}
-{window} `(LazyDocker.WindowConfig)`
+{LazySql.Config}
+{window} `(LazySql.WindowConfig)`
 
 Class ~
-{LazyDocker.WindowConfig}
-{settings} `(LazyDocker.WindowSettings)`
+{LazySql.WindowConfig}
+{settings} `(LazySql.WindowSettings)`
 
 Class ~
-{LazyDocker.WindowSettings}
+{LazySql.WindowSettings}
 {width} `(number)` Width of the floating panel, as a percentage (0 to 1) of screen width.
 {height} `(number)` Height of the floating panel, as a percentage (0 to 1) of screen height.
 {border} `(string)` Style of the floating window border. See ':h nvim_open_win'.
 {relative} `(string)` Sets the window layout relative to. See ':h nvim_open_win'.
 
 ------------------------------------------------------------------------------
-                                                            *LazyDocker.setup()*
-                          `LazyDocker.setup`({config})
+                                                            *LazySql.setup()*
+                          `LazySql.setup`({config})
 Parameters ~
-{config} `(table|nil)` Module config table. See |LazyDocker.config|.
+{config} `(table|nil)` Module config table. See |LazySql.config|.
 
 Usage ~
 >lua
-  require('lazydocker').setup() -- Use default config.
+  require('lazysql').setup() -- Use default config.
   -- OR
-  require('lazydocker').setup({ window = { settings = { width = 0.8 } } }) -- Provide your own config.
+  require('lazysql').setup({ window = { settings = { width = 0.8 } } }) -- Provide your own config.
 <
 Return ~
 `(nil)`
 
 ------------------------------------------------------------------------------
-                                                             *LazyDocker.config*
-                              `LazyDocker.config`
-Default values (Check |LazyDocker.types| for details):
+                                                             *LazySql.config*
+                              `LazySql.config`
+Default values (Check |LazySql.types| for details):
 >lua
-  LazyDocker.config = {
+  LazySql.config = {
     window = {
       settings = {
         width = 0.618,
@@ -71,68 +71,68 @@ Default values (Check |LazyDocker.types| for details):
   }
 <
 Type ~
-`(LazyDocker.Config)`
+`(LazySql.Config)`
 
 ------------------------------------------------------------------------------
-                                                             *LazyDocker.open()*
-                              `LazyDocker.open`()
-Opens a new floating window with lazydocker running.
+                                                             *LazySql.open()*
+                              `LazySql.open`()
+Opens a new floating window with lazysql running.
 
 Usage ~
 >lua
-   require('lazydocker').open()
+   require('lazysql').open()
    -- OR
-   :lua LazyDocker.open()
+   :lua LazySql.open()
 <
 Return ~
 `(nil)`
 
 ------------------------------------------------------------------------------
-                                                            *LazyDocker.close()*
-                              `LazyDocker.close`()
-Closes the lazydocker window if it's currently open.
+                                                            *LazySql.close()*
+                              `LazySql.close`()
+Closes the lazysql window if it's currently open.
 
 Usage ~
 >lua
-   require('lazydocker').close()
+   require('lazysql').close()
    -- OR
-   :lua LazyDocker.close()
+   :lua LazySql.close()
 <
 Return ~
 `(boolean)` closed True if a valid window was found and closed, false otherwise.
 
 ------------------------------------------------------------------------------
-                                                           *LazyDocker.toggle()*
-                             `LazyDocker.toggle`()
-Toggles the lazydocker window open or closed.
+                                                           *LazySql.toggle()*
+                             `LazySql.toggle`()
+Toggles the lazysql window open or closed.
 
-- If the window is open (or believed to be open based on the internal handle), it calls |LazyDocker.close()|.
-- If closing fails (meaning it wasn't open), it calls |LazyDocker.open()|.
+- If the window is open (or believed to be open based on the internal handle), it calls |LazySql.close()|.
+- If closing fails (meaning it wasn't open), it calls |LazySql.open()|.
 
-This function is intended to be mapped by the user. See |LazyDocker.recipes|.
+This function is intended to be mapped by the user. See |LazySql.recipes|.
 
 Usage ~
 Map this function to a keybind in your Neovim config.
 >lua
-   require('lazydocker').toggle()
+   require('lazysql').toggle()
    -- OR
-   :lua LazyDocker.toggle()
+   :lua LazySql.toggle()
 <
 Return ~
 `(nil)`
 
 ------------------------------------------------------------------------------
-                                                            *LazyDocker.recipes*
+                                                            *LazySql.recipes*
 Common configuration examples ~
 
 # Toggle behavior ~
 
 Since this plugin does not set any keymaps by default, you can map the
-|LazyDocker.toggle()| function yourself.
+|LazySql.toggle()| function yourself.
 
 >lua
-  -- It need to be setup on both `normal` and `terminal` modes because `lazydocker` is run inside a terminal buffer
-  vim.keymap.set({ 'n', 't' }, '<leader>ld', '<Cmd>lua LazyDocker.toggle()<CR>')
+  -- It need to be setup on both `normal` and `terminal` modes because `lazysql` is run inside a terminal buffer
+  vim.keymap.set({ 'n', 't' }, '<leader>ld', '<Cmd>lua LazySql.toggle()<CR>')
 <
 
 Replace `<leader>ld` with your preferred key combination.

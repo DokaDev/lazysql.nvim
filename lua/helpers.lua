@@ -3,11 +3,11 @@
 ---@class Helpers
 local M = {}
 
----@type number|nil Global variable to store the Job ID of the running lazydocker process.
-_G.__LazyDocker_Process_JobID = nil
+---@type number|nil Global variable to store the Job ID of the running lazysql process.
+_G.__LazySql_Process_JobID = nil
 
----@type number|nil Stores the window handle of the active lazydocker instance.
-_G.__LazyDocker_Window_Handle = nil
+---@type number|nil Stores the window handle of the active lazysql instance.
+_G.__LazySql_Window_Handle = nil
 
 --- Checks if a value is a number between 0 and 1 (exclusive of 0, inclusive of 1).
 ---@param a any The value to check.
@@ -62,10 +62,10 @@ local function _is_valid_relative(a)
   return relatives[a]
 end
 
---- Checks if the lazydocker executable is available in PATH.
+--- Checks if the lazysql executable is available in PATH.
 ---@return boolean
-local function _is_lazydocker_executable_available()
-  return vim.fn.executable('lazydocker') == 1
+local function _is_lazysql_executable_available()
+  return vim.fn.executable('lazysql') == 1
 end
 
 --- Checks if the docker executable is available in PATH.
@@ -75,12 +75,12 @@ local function _is_docker_executable_available()
 end
 
 --- Merges user configuration with default configuration and validates it.
----@param base_config LazyDocker.Config The default configuration table.
----@param user_config? LazyDocker.Config The user-provided configuration table.
----@return LazyDocker.Config The merged and validated configuration table.
+---@param base_config LazySql.Config The default configuration table.
+---@param user_config? LazySql.Config The user-provided configuration table.
+---@return LazySql.Config The merged and validated configuration table.
 function M.setup_config(base_config, user_config)
   vim.validate({
-    ['LazyDocker.config'] = { user_config, 'table', true },
+    ['LazySql.config'] = { user_config, 'table', true },
   })
 
   local config = vim.deepcopy(base_config)
@@ -88,12 +88,12 @@ function M.setup_config(base_config, user_config)
 
   if user_config.window then
     vim.validate({
-      ['LazyDocker.window'] = { user_config.window, _is_optional_table, 'a table, if provided' },
+      ['LazySql.window'] = { user_config.window, _is_optional_table, 'a table, if provided' },
     })
 
     if user_config.window.settings then
       vim.validate({
-        ['LazyDocker.window.settings'] = { user_config.window.settings, _is_optional_table, 'a table, if provided' },
+        ['LazySql.window.settings'] = { user_config.window.settings, _is_optional_table, 'a table, if provided' },
       })
 
       config.window.settings = vim.tbl_deep_extend('force', config.window.settings, user_config.window.settings)
@@ -103,10 +103,10 @@ function M.setup_config(base_config, user_config)
   local settings = config.window.settings
 
   vim.validate({
-    ['LazyDocker.config.window.settings.width'] = { settings.width, _is_percentage, 'a number between 0 and 1' },
-    ['LazyDocker.config.window.settings.height'] = { settings.height, _is_percentage, 'a number between 0 and 1' },
-    ['LazyDocker.config.window.settings.border'] = { settings.border, _is_valid_border, 'a valid border definition' },
-    ['LazyDocker.config.window.settings.relative'] = {
+    ['LazySql.config.window.settings.width'] = { settings.width, _is_percentage, 'a number between 0 and 1' },
+    ['LazySql.config.window.settings.height'] = { settings.height, _is_percentage, 'a number between 0 and 1' },
+    ['LazySql.config.window.settings.border'] = { settings.border, _is_valid_border, 'a valid border definition' },
+    ['LazySql.config.window.settings.relative'] = {
       settings.relative,
       _is_valid_relative,
       'a valid relative definition',
@@ -116,45 +116,45 @@ function M.setup_config(base_config, user_config)
   return config
 end
 
---- Checks if both docker and lazydocker executables are available.
+--- Checks if both docker and lazysql executables are available.
 ---@return boolean True if both are available, false otherwise.
 function M.check_prerequisites()
   if not _is_docker_executable_available() then
-    vim.notify('LazyDocker: "docker" command not found. Please install Docker.', vim.log.levels.ERROR)
+    vim.notify('LazySql: "docker" command not found. Please install Docker.', vim.log.levels.ERROR)
     return false
   end
 
-  if not _is_lazydocker_executable_available() then
-    vim.notify('LazyDocker: "lazydocker" command not found. Please install lazydocker.', vim.log.levels.ERROR)
+  if not _is_lazysql_executable_available() then
+    vim.notify('LazySql: "lazysql" command not found. Please install lazysql.', vim.log.levels.ERROR)
     return false
   end
 
   return true
 end
 
---- Stops the lazydocker job if it's still running (hanging).
+--- Stops the lazysql job if it's still running (hanging).
 ---@return nil
-function M.stop_hanging_lazydocker_job_if_active()
-  if __LazyDocker_Process_JobID and vim.fn.jobwait({ __LazyDocker_Process_JobID }, 0)[1] == -1 then
-    vim.fn.jobstop(__LazyDocker_Process_JobID)
-    __LazyDocker_Process_JobID = nil
+function M.stop_hanging_lazysql_job_if_active()
+  if __LazySql_Process_JobID and vim.fn.jobwait({ __LazySql_Process_JobID }, 0)[1] == -1 then
+    vim.fn.jobstop(__LazySql_Process_JobID)
+    __LazySql_Process_JobID = nil
   end
 end
 
---- Creates the floating window and buffer for lazydocker.
+--- Creates the floating window and buffer for lazysql.
 ---@param win_opts vim.api.WinOpts Neovim window options.
 ---@return number buf The buffer handle.
 ---@return number win The window handle.
-function M.create_lazydocker_win_and_buffer(win_opts)
+function M.create_lazysql_win_and_buffer(win_opts)
   local buf = vim.api.nvim_create_buf(false, true)
   local win = vim.api.nvim_open_win(buf, true, win_opts)
   return buf, win
 end
 
 --- Calculates the final window configuration based on user settings and screen dimensions.
----@param win_settings LazyDocker.WindowSettings User-defined window settings.
+---@param win_settings LazySql.WindowSettings User-defined window settings.
 ---@return vim.api.WinOpts Calculated window options for nvim_open_win.
-function M.get_lazydocker_win_custom_config(win_settings)
+function M.get_lazysql_win_custom_config(win_settings)
   -- Checks if the user has an active tabline
   local has_tabline = vim.o.showtabline == 2 or (vim.o.showtabline == 1 and #vim.api.nvim_list_tabpages() > 1)
   -- Checks if the user has an active statusline
@@ -195,17 +195,17 @@ function M.get_lazydocker_win_custom_config(win_settings)
   }
 end
 
---- Sets up autocmds to clean up the lazydocker job when the buffer or window is closed.
+--- Sets up autocmds to clean up the lazysql job when the buffer or window is closed.
 ---@param buf number The buffer handle.
 ---@param win number The window handle.
 ---@return nil
-function M.start_lazydocker_job_cleanup_autocmds(buf, win)
-  local group = vim.api.nvim_create_augroup('LazyDockerTermCleanup', { clear = true })
+function M.start_lazysql_job_cleanup_autocmds(buf, win)
+  local group = vim.api.nvim_create_augroup('LazySqlTermCleanup', { clear = true })
 
   local cleanup_callback = function()
-    M.stop_hanging_lazydocker_job_if_active()
-    if _G.__LazyDocker_Window_Handle == win then
-      _G.__LazyDocker_Window_Handle = nil
+    M.stop_hanging_lazysql_job_if_active()
+    if _G.__LazySql_Window_Handle == win then
+      _G.__LazySql_Window_Handle = nil
     end
     pcall(vim.api.nvim_del_augroup_by_id, group)
   end
@@ -225,15 +225,15 @@ function M.start_lazydocker_job_cleanup_autocmds(buf, win)
   })
 end
 
---- Starts the lazydocker process in a terminal attached to the window.
+--- Starts the lazysql process in a terminal attached to the window.
 ---@param win number The window handle where the terminal will be opened.
 ---@return nil
-function M.start_lazydocker_job(win)
-  local job_id = vim.fn.termopen('lazydocker', {
+function M.start_lazysql_job(win)
+  local job_id = vim.fn.termopen('lazysql', {
     on_exit = function()
-      __LazyDocker_Process_JobID = nil
-      if _G.__LazyDocker_Window_Handle == win then
-        _G.__LazyDocker_Window_Handle = nil
+      __LazySql_Process_JobID = nil
+      if _G.__LazySql_Window_Handle == win then
+        _G.__LazySql_Window_Handle = nil
       end
       if vim.api.nvim_win_is_valid(win) then
         vim.schedule(function()
@@ -244,7 +244,7 @@ function M.start_lazydocker_job(win)
       end
     end,
   })
-  __LazyDocker_Process_JobID = job_id
+  __LazySql_Process_JobID = job_id
 end
 
 return M
